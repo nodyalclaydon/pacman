@@ -44,6 +44,34 @@ h1, h3 {
     border: none;
 }
 
+/* MEDIA QUERY */
+
+@media (min-width: 1500px) {
+    .grid {
+        width: 840px;
+        height: 840px;
+    }
+
+    .grid div {
+        width: 30px;
+        height: 30px;
+    }
+
+    .pac-dot {
+        border: 10px solid white;
+        box-sizing: border-box;
+    }
+    
+    .power-pellet {
+        border-radius: 15px;
+    }
+    
+    .pacman {
+        border-radius: 15px;
+        border: none;
+    }
+}
+
 /* GHOSTS */
 
 .blinky {
@@ -79,32 +107,4 @@ h1, h3 {
     border: none;
     border-top-right-radius: 50%;
     border-top-left-radius: 50%;
-}
-
-/* MEDIA QUERY */
-
-@media (min-width: 900px) {
-    .grid {
-        width: 840px;
-        height: 840px;
-    }
-
-    .grid div {
-        width: 30px;
-        height: 30px;
-    }
-
-    .pac-dot {
-        border: 10px solid white;
-        box-sizing: border-box;
-    }
-    
-    .power-pellet {
-        border-radius: 15px;
-    }
-    
-    .pacman {
-        border-radius: 15px;
-        border: none;
-    }
 }

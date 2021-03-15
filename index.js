@@ -24,8 +24,8 @@ const layout = [
     1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,
     1,1,1,1,1,1,0,1,1,4,4,4,4,4,4,4,4,4,4,1,1,0,1,1,1,1,1,1,
     1,1,1,1,1,1,0,1,1,4,1,1,1,2,2,1,1,1,4,1,1,0,1,1,1,1,1,1,
-    1,1,1,1,1,1,0,1,1,4,1,2,2,2,2,2,2,1,4,1,1,0,1,1,1,1,1,1,
-    4,4,4,4,4,4,0,0,0,4,1,2,2,2,2,2,2,1,4,0,0,0,4,4,4,4,4,4,
+    1,1,1,1,1,1,0,1,1,4,1,2,2,5,5,2,2,1,4,1,1,0,1,1,1,1,1,1,
+    4,4,4,4,4,4,0,0,0,4,1,2,2,5,5,2,2,1,4,0,0,0,4,4,4,4,4,4,
     1,1,1,1,1,1,0,1,1,4,1,2,2,2,2,2,2,1,4,1,1,0,1,1,1,1,1,1,
     1,1,1,1,1,1,0,1,1,4,1,1,1,1,1,1,1,1,4,1,1,0,1,1,1,1,1,1,
     1,1,1,1,1,1,0,1,1,4,1,1,1,1,1,1,1,1,4,1,1,0,1,1,1,1,1,1,
@@ -57,6 +57,8 @@ function createBoard() {
             squares[i].classList.add("power-pellet")
         } else if (layout[i] === 2) {
             squares[i].classList.add("ghost-lair")
+        } else if (layout[i] === 5) {
+            squares[i].classList.add("ghost-lair", "ghost-exit")
         }
     }
 }
@@ -66,6 +68,7 @@ createBoard()
 let pacmanCurrentIndex = 490
 squares[pacmanCurrentIndex].classList.add("pacman")
 
+// redo logic so pacman continues direction until another button is pressed
 function control(e) {
     // if (e.keyCode === 40) {
     //     pacmanCurrentIndex = pacmanCurrentIndex + 18;
@@ -176,7 +179,9 @@ ghosts.forEach(ghost => {
 })
 
 // move ghosts around grid
-function moveGhost(ghost) {
+function moveGhost(ghost) { 
+    //redo logic so ghosts can change direction if option is avail (not just when run into wall/ghost)
+    //redo logic so ghosts cannon change direction to current direction (elimiate "stalled ghost")
     const directions = [-1, +1, -width, +width]
     let direction = directions[Math.floor(Math.random() * directions.length)]
 
@@ -185,23 +190,28 @@ function moveGhost(ghost) {
             !squares[ghost.currentIndex + direction].classList.contains("wall") &&
             !squares[ghost.currentIndex + direction].classList.contains("ghost")
         ) {
+            //what happens if there's no ghost or wall in front of ghost
             squares[ghost.currentIndex].classList.remove(ghost.className)
             squares[ghost.currentIndex].classList.remove("ghost", "scared-ghost")
             ghost.currentIndex += direction
             squares[ghost.currentIndex].classList.add(ghost.className)
             squares[ghost.currentIndex].classList.add("ghost")
-        } else direction = directions[Math.floor(Math.random() * directions.length)]
+        } else direction = directions[Math.floor(Math.random() * directions.length)] //what happens if there is a ghost OR wall in front of ghost
         
+        //makes ghosts exit ghost-lair if they are in middle
+        if (squares[ghost.currentIndex].classList.contains("ghost-exit")) { 
+            direction = -width
+        }
+
         if (ghost.isScared) {
             squares[ghost.currentIndex].classList.add("scared-ghost")
         }
 
-        if (ghost.isScared && squares[ghost.currentIndex].classList.contains("pacman")) {
-            squares[ghost.currentIndex].classList.removed(ghost.className, "scared-ghost", "ghost")
+        if (ghost.isScared && squares[pacmanCurrentIndex].classList.contains("ghost")) { 
+            squares[ghost.currentIndex].classList.remove(ghost.className, "scared-ghost", "ghost")
             ghost.currentIndex = ghost.startIndex
             score += 50
             squares[ghost.currentIndex].classList.add(ghost.className, "ghost")
-
         }
 
         checkForGameOver()
