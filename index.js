@@ -50,15 +50,17 @@ function createBoard() {
         squares.push(square)
 
         if (layout[i] === 0) {
-            squares[i].classList.add("pac-dot")
+            squares[i].classList.add("pac-dot", "empty")
         } else if (layout[i] === 1) {
             squares[i].classList.add("wall")
         } else if (layout[i] === 3) {
-            squares[i].classList.add("power-pellet")
+            squares[i].classList.add("power-pellet", "empty")
         } else if (layout[i] === 2) {
             squares[i].classList.add("ghost-lair")
         } else if (layout[i] === 5) {
             squares[i].classList.add("ghost-lair", "ghost-exit")
+        } else if (layout[i] === 4) {
+            squares[i].classList.add("empty")
         }
     }
 }
@@ -69,65 +71,52 @@ let pacmanCurrentIndex = 490
 squares[pacmanCurrentIndex].classList.add("pacman")
 
 // redo logic so pacman continues direction until another button is pressed
+let pacDirections = [-1, +1, -width, +width]
+let pacDirection = pacDirections[0]
+let moving
+
 function control(e) {
-    // if (e.keyCode === 40) {
-    //     pacmanCurrentIndex = pacmanCurrentIndex + 18;
-    // } else if (e.keyCode === 38) {
-    //     pacmanCurrentIndex = pacmanCurrentIndex - 18;
-    // } else if (e.keyCode === 37) {
-    //     pacManCurrentIndex = pacManCurrentIndex - 1;
-    // } else if (e.keyCode === 39) {
-    //     pacmanCurrentIndex = pacManCurrentIndex + 1;
-    // }
-    squares[pacmanCurrentIndex].classList.remove("pacman")
+    clearInterval(moving)
+
     switch(e.keyCode) {
-        case 40:
-            if (
-                !squares[pacmanCurrentIndex + width].classList.contains("ghost-lair") &&
-                !squares[pacmanCurrentIndex + width].classList.contains("wall") &&
-                pacmanCurrentIndex + width < width * width
-                ) 
-                pacmanCurrentIndex += width
+        case 40: //down      
+            pacDirection = pacDirections[3]
+            pacMove()
         break
-        case 38:
-            if (
-                !squares[pacmanCurrentIndex - width].classList.contains("ghost-lair") &&
-                !squares[pacmanCurrentIndex - width].classList.contains("wall") &&
-                pacmanCurrentIndex - width >= 0
-                ) 
-                pacmanCurrentIndex -= width
+        case 38: //up     
+            pacDirection = pacDirections[2]
+            pacMove()
         break
-        case 37:
-            if (
-                !squares[pacmanCurrentIndex - 1].classList.contains("ghost-lair") &&
-                !squares[pacmanCurrentIndex - 1].classList.contains("wall") &&
-                pacmanCurrentIndex % width !== 0
-                ) 
-                pacmanCurrentIndex -=1
-                if (pacmanCurrentIndex === 364) {
-                    pacmanCurrentIndex = 391
-                }
+        case 37: //left
+            pacDirection = pacDirections[0]
+            pacMove()
         break
-        case 39:
-            if (
-                !squares[pacmanCurrentIndex + 1].classList.contains("ghost-lair") &&
-                !squares[pacmanCurrentIndex + 1].classList.contains("wall") &&
-                pacmanCurrentIndex % width < width - 1
-                ) 
-                pacmanCurrentIndex +=1
-                if (pacmanCurrentIndex === 391) {
-                    pacmanCurrentIndex = 364
-                }
+        case 39: //right         
+            pacDirection = pacDirections[1]
+            pacMove()
         break
     }
-    squares[pacmanCurrentIndex].classList.add("pacman")
-    pacDotEaten()
-    powerPelletEaten()
-    checkForWin()
-    checkForGameOver()
+
+    function pacMove() { 
+        moving = setInterval(function() {
+            if (!squares[pacmanCurrentIndex + pacDirection].classList.contains("empty")) {
+            pacmanCurrentIndex = pacmanCurrentIndex
+        } else {
+            squares[pacmanCurrentIndex].classList.remove("pacman")
+            if (pacmanCurrentIndex + pacDirection === 364) { pacmanCurrentIndex = 391 }
+            if (pacmanCurrentIndex + pacDirection === 391) { pacmanCurrentIndex = 364 }
+            pacmanCurrentIndex = pacmanCurrentIndex + pacDirection
+            squares[pacmanCurrentIndex].classList.add("pacman")
+        }
+        pacDotEaten()
+        powerPelletEaten()
+        checkForWin()
+        checkForGameOver()
+    }, 300)
+    }
 }
 
-document.addEventListener('keyup', control)
+document.addEventListener('keydown', control) //add a "press arrow button to begin" or something like that
 
 // make pacman eat
 function pacDotEaten() {
@@ -182,6 +171,7 @@ ghosts.forEach(ghost => {
 function moveGhost(ghost) { 
     //redo logic so ghosts can change direction if option is avail (not just when run into wall/ghost)
     //redo logic so ghosts cannon change direction to current direction (elimiate "stalled ghost")
+    //redo logic so ghosts can go through portal
     const directions = [-1, +1, -width, +width]
     let direction = directions[Math.floor(Math.random() * directions.length)]
 
@@ -230,14 +220,18 @@ function checkForGameOver() {
             ghosts.forEach(ghost => clearInterval(ghost.timerId))
             document.removeEventListener("keyup", control)
             scoreDisplay.innerHTML = score + " GAME OVER"
+            clearInterval(moving)
+            document.removeEventListener('keydown', control)
         }
 }
 
 // Check for Win
-function checkForWin() {
+function checkForWin() { //redo logic to check if there are any pellets remaining instead of score (can reach score w/o getting all pellets)
     if (score === 274) {
         ghosts.forEach(ghost => clearInterval(ghost.timerId))
         document.removeEventListener("keyup", control)
         scoreDisplay.innerHTML = score + " YOU WIN!!!"
+        clearInterval(moving)
+        document.removeEventListener('keydown', control)
     }
 }
