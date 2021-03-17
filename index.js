@@ -26,7 +26,7 @@ const layout = [
     1,1,1,1,1,1,0,1,1,4,1,1,1,2,2,1,1,1,4,1,1,0,1,1,1,1,1,1,
     1,1,1,1,1,1,0,1,1,4,1,2,2,5,5,2,2,1,4,1,1,0,1,1,1,1,1,1,
     4,4,4,4,4,4,0,0,0,4,1,2,2,5,5,2,2,1,4,0,0,0,4,4,4,4,4,4,
-    1,1,1,1,1,1,0,1,1,4,1,2,2,2,2,2,2,1,4,1,1,0,1,1,1,1,1,1,
+    1,1,1,1,1,1,0,1,1,4,1,2,2,5,5,2,2,1,4,1,1,0,1,1,1,1,1,1,
     1,1,1,1,1,1,0,1,1,4,1,1,1,1,1,1,1,1,4,1,1,0,1,1,1,1,1,1,
     1,1,1,1,1,1,0,1,1,4,1,1,1,1,1,1,1,1,4,1,1,0,1,1,1,1,1,1,
     1,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,1,
@@ -102,17 +102,35 @@ function control(e) {
             if (!squares[pacmanCurrentIndex + pacDirection].classList.contains("empty")) {
             pacmanCurrentIndex = pacmanCurrentIndex
         } else {
-            squares[pacmanCurrentIndex].classList.remove("pacman")
+            squares[pacmanCurrentIndex].classList.remove("pacman", "pac-right", "pac-up", "pac-down", "pac-left")
             if (pacmanCurrentIndex + pacDirection === 364) { pacmanCurrentIndex = 391 }
             if (pacmanCurrentIndex + pacDirection === 391) { pacmanCurrentIndex = 364 }
             pacmanCurrentIndex = pacmanCurrentIndex + pacDirection
             squares[pacmanCurrentIndex].classList.add("pacman")
+            pacAnimate()
         }
         pacDotEaten()
         powerPelletEaten()
         checkForWin()
         checkForGameOver()
     }, 300)
+    }
+}
+
+//CSS animations for pacman based on travel direction
+function pacAnimate() {
+    if (pacDirection === -1) { 
+        squares[pacmanCurrentIndex].classList.remove("pac-right", "pac-up", "pac-down")
+        squares[pacmanCurrentIndex].classList.add("pac-left") 
+    } else if (pacDirection === +1) {
+        squares[pacmanCurrentIndex].classList.remove("pac-left", "pac-up", "pac-down")
+        squares[pacmanCurrentIndex].classList.add("pac-right")
+    } else if (pacDirection === +width) {
+        squares[pacmanCurrentIndex].classList.remove("pac-right", "pac-left", "pac-up")
+        squares[pacmanCurrentIndex].classList.add("pac-down")
+    } else if (pacDirection === -width) {
+        squares[pacmanCurrentIndex].classList.remove("pac-right", "pac-left", "pac-down")
+        squares[pacmanCurrentIndex].classList.add("pac-up")
     }
 }
 
@@ -155,9 +173,9 @@ class Ghost {
 }
 
 const ghosts = [
-    new Ghost("blinky", 348, 250),
-    new Ghost("pinky", 376, 400),
-    new Ghost("inky", 351, 300),
+    new Ghost("blinky", 348, 350),
+    new Ghost("pinky", 376, 450),
+    new Ghost("inky", 351, 400),
     new Ghost("clyde", 379, 500)
 ]
 
@@ -169,29 +187,43 @@ ghosts.forEach(ghost => {
 
 // move ghosts around grid
 function moveGhost(ghost) { 
-    //redo logic so ghosts can change direction if option is avail (not just when run into wall/ghost)
-    //redo logic so ghosts cannon change direction to current direction (elimiate "stalled ghost")
-    //redo logic so ghosts can go through portal
-    const directions = [-1, +1, -width, +width]
-    let direction = directions[Math.floor(Math.random() * directions.length)]
+    let direction = -width
 
     ghost.timerId = setInterval(function() {
-        if (
-            !squares[ghost.currentIndex + direction].classList.contains("wall") &&
-            !squares[ghost.currentIndex + direction].classList.contains("ghost")
-        ) {
-            //what happens if there's no ghost or wall in front of ghost
-            squares[ghost.currentIndex].classList.remove(ghost.className)
-            squares[ghost.currentIndex].classList.remove("ghost", "scared-ghost")
-            ghost.currentIndex += direction
-            squares[ghost.currentIndex].classList.add(ghost.className)
-            squares[ghost.currentIndex].classList.add("ghost")
-        } else direction = directions[Math.floor(Math.random() * directions.length)] //what happens if there is a ghost OR wall in front of ghost
-        
+        let availDirs = []
+
+         //if traveling horizontally, looks for vertical options
+        if (direction === -1 || direction === +1) {
+            if (!squares[ghost.currentIndex + direction].classList.contains("wall")) { availDirs.push(direction) }
+            if (!squares[ghost.currentIndex + width].classList.contains("wall")) { availDirs.push(+width) }
+            if (!squares[ghost.currentIndex - width].classList.contains("wall")) { availDirs.push(-width) }
+        }
+
+        //if traveling vertically, looks for left/right options
+        if (direction === -width || direction === +width) { 
+            if (!squares[ghost.currentIndex + direction].classList.contains("wall")) { availDirs.push(direction) }
+            if (!squares[ghost.currentIndex + 1].classList.contains("wall")) { availDirs.push(+1) }
+            if (!squares[ghost.currentIndex - 1].classList.contains("wall")) { availDirs.push(-1) }
+        }
+
+        //picks available direction unless ghost is in the way, goes opposite
+        if (squares[ghost.currentIndex + direction].classList.contains("ghost")) { 
+            direction = -direction
+        } else { direction = availDirs[Math.floor(Math.random() * availDirs.length)] }
+
         //makes ghosts exit ghost-lair if they are in middle
         if (squares[ghost.currentIndex].classList.contains("ghost-exit")) { 
             direction = -width
         }
+
+        //logic that moves the ghosts
+        squares[ghost.currentIndex].classList.remove(ghost.className)
+        squares[ghost.currentIndex].classList.remove("ghost", "scared-ghost")
+        if (ghost.currentIndex + direction === 364) { ghost.currentIndex = 391 }
+        if (ghost.currentIndex + direction === 391) { ghost.currentIndex = 364 }
+        ghost.currentIndex += direction
+        squares[ghost.currentIndex].classList.add(ghost.className)
+        squares[ghost.currentIndex].classList.add("ghost")
 
         if (ghost.isScared) {
             squares[ghost.currentIndex].classList.add("scared-ghost")
@@ -210,6 +242,7 @@ function moveGhost(ghost) {
 }
 
 ghosts.forEach(ghost => moveGhost(ghost))
+// ghosts.forEach(ghost => ghostAnimate(ghost)) //can i pass in direction to this function? Will be similar to pacman animate function...
 
 // Check for Game Over
 function checkForGameOver() {
