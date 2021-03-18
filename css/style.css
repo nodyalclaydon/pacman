@@ -12,27 +12,32 @@ h1, h3 {
     display: flex;
     margin: 0 auto;
     flex-wrap: wrap;
+    box-sizing: border-box;
     width: 420px;
     height: 420px;
 }
 
 .grid div {
+    box-sizing: border-box;
     width: 15px;
     height: 15px;
 }
 
 .pac-dot {
     background-color: #737373;
-    border: 5px solid white;
+    border: 6px solid white;
     box-sizing: border-box;
 }
 
 .wall {
     background-color: #474B96;
+    z-index: 1;
 }
 
 .power-pellet {
     background-color: #6CD1E3;
+    border: 2px solid white;
+    box-sizing: border-box;
     border-radius: 7.5px;
 }
 
@@ -41,22 +46,85 @@ h1, h3 {
 .pac-right,
 .pac-up,
 .pac-down {
+    position: relative;
     background-color: yellow;
-    width: 100%;
-    height: 100%;
+    box-sizing: border-box;
     border-radius: 50%;
-    border: none;
 }
 
-/* CREATE ANIMATION THAT STARTS ELEMENT HALF WIDTH ON LEFT TOWARD HALF WIDTH ON RIGHT */
-/* .pac-right {
-    animation: move-right 300ms ease;
+/* PACMAN ANIMATIONS */
+.pac-right {
+    animation: move-right 300ms linear;
+}
+
+.pac-left {
+    animation: move-left 300ms linear;
+}
+
+.pac-up {
+    animation: move-up 300ms linear;
+}
+
+.pac-down {
+    animation: move-down 300ms linear;
 }
 
 @keyframes move-right {
-    0% { border-left: 7px solid white; padding-right: 0px }
-    100% { padding-left: 0px; padding-right: 7px solid white }
-} */
+    0% { margin-left: -7.5px; margin-right: 7.5px }
+    100% { margin-right: -7.5px; margin-left: 7.5px; }
+}
+
+@keyframes move-left {
+    0% { margin-right: -7.5px; margin-left: 7.5px }
+    100% { margin-left: -7.5px; margin-right: 7.5px }
+}
+
+@keyframes move-up {
+    0% { margin-bottom: -7.5px; margin-top: 7.5px }
+    100% { margin-top: -7.5px; margin-bottom: 7.5px }
+}
+
+@keyframes move-down {
+    0% { margin-top: -7.5px; margin-bottom: 7.5px }
+    100% { margin-bottom: -7.5px; margin-top: 7.5px }
+}
+
+/* GHOSTS */
+
+.ghost {
+    border: 1px solid white;
+    box-sizing: border-box;
+}
+
+.blinky {
+    background-color: red;
+    border-top-right-radius: 50%;
+    border-top-left-radius: 50%;
+}
+
+.pinky {
+    background-color: pink;
+    border-top-right-radius: 50%;
+    border-top-left-radius: 50%;
+}
+
+.inky {
+    background-color: aqua;
+    border-top-right-radius: 50%;
+    border-top-left-radius: 50%;
+}
+
+.clyde {
+    background-color: orange;
+    border-top-right-radius: 50%;
+    border-top-left-radius: 50%;
+}
+
+.scared-ghost {
+    background-color: aquamarine;
+    border-top-right-radius: 50%;
+    border-top-left-radius: 50%;
+}
 
 /* MEDIA QUERY */
 
@@ -72,53 +140,57 @@ h1, h3 {
     }
 
     .pac-dot {
-        border: 10px solid white;
+        border: 12px solid white;
         box-sizing: border-box;
     }
     
     .power-pellet {
+        border: 4px solid white;
         border-radius: 15px;
     }
     
     .pacman {
         border-radius: 15px;
-        border: none;
     }
-}
 
-/* GHOSTS */
+    .ghost {
+        border: 3px solid white;
+    }
 
-.blinky {
-    background-color: red;
-    border: none;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
-}
+    /* PACMAN ANIMATIONS */
+    .pac-right {
+        animation: move-right 300ms linear;
+    }
 
-.pinky {
-    background-color: pink;
-    border: none;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
-}
+    .pac-left {
+        animation: move-left 300ms linear;
+    }
 
-.inky {
-    background-color: aqua;
-    border: none;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
-}
+    .pac-up {
+        animation: move-up 300ms linear;
+    }
 
-.clyde {
-    background-color: orange;
-    border: none;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
-}
+    .pac-down {
+        animation: move-down 300ms linear;
+    }
 
-.scared-ghost {
-    background-color: aquamarine;
-    border: none;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
+    @keyframes move-right {
+        0% { margin-left: -15px; margin-right: 15px }
+        100% { margin-right: -15px; margin-left: 15px; }
+    }
+
+    @keyframes move-left {
+        0% { margin-right: -15px; margin-left: 15px }
+        100% { margin-left: -15px; margin-right: 15px }
+    }
+
+    @keyframes move-up {
+        0% { margin-bottom: -15px; margin-top: 15px }
+        100% { margin-top: -15px; margin-bottom: 15px }
+    }
+
+    @keyframes move-down {
+        0% { margin-top: -15px; margin-bottom: 15px }
+        100% { margin-bottom: -15px; margin-top: 15px }
+    }
 }

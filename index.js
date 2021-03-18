@@ -77,7 +77,6 @@ let moving
 
 function control(e) {
     clearInterval(moving)
-
     switch(e.keyCode) {
         case 40: //down      
             pacDirection = pacDirections[3]
