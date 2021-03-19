@@ -175,7 +175,7 @@ const ghosts = [
     new Ghost("blinky", 348, 350),
     new Ghost("pinky", 376, 450),
     new Ghost("inky", 351, 400),
-    new Ghost("clyde", 379, 500)
+    new Ghost("clyde", 379, 475)
 ]
 
 // draw ghosts onto the grid
@@ -215,14 +215,21 @@ function moveGhost(ghost) {
             direction = -width
         }
 
-        //logic that moves the ghosts
+        //logic that moves the ghosts to new div
         squares[ghost.currentIndex].classList.remove(ghost.className)
-        squares[ghost.currentIndex].classList.remove("ghost", "scared-ghost")
+        squares[ghost.currentIndex].classList.remove("ghost", 
+                                                    "scared-ghost", 
+                                                    `${ghost.className}-right`, 
+                                                    `${ghost.className}-left`, 
+                                                    `${ghost.className}-up`, 
+                                                    `${ghost.className}-down`)
         if (ghost.currentIndex + direction === 364) { ghost.currentIndex = 391 }
         if (ghost.currentIndex + direction === 391) { ghost.currentIndex = 364 }
         ghost.currentIndex += direction
-        squares[ghost.currentIndex].classList.add(ghost.className)
-        squares[ghost.currentIndex].classList.add("ghost")
+        if (direction === +1) { squares[ghost.currentIndex].classList.add(ghost.className, `${ghost.className}-right`, "ghost") }
+        if (direction === -1) { squares[ghost.currentIndex].classList.add(ghost.className, `${ghost.className}-left`, "ghost") }
+        if (direction === -width) { squares[ghost.currentIndex].classList.add(ghost.className, `${ghost.className}-up`, "ghost") }
+        if (direction === +width) { squares[ghost.currentIndex].classList.add(ghost.className, `${ghost.className}-down`, "ghost") }
 
         if (ghost.isScared) {
             squares[ghost.currentIndex].classList.add("scared-ghost")
@@ -241,7 +248,6 @@ function moveGhost(ghost) {
 }
 
 ghosts.forEach(ghost => moveGhost(ghost))
-// ghosts.forEach(ghost => ghostAnimate(ghost)) //can i pass in direction to this function? Will be similar to pacman animate function...
 
 // Check for Game Over
 function checkForGameOver() {
