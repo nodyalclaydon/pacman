@@ -213,9 +213,9 @@ function moveGhost(ghost) {
         } else { direction = availDirs[Math.floor(Math.random() * availDirs.length)] }
 
         //makes ghosts exit ghost-lair if they are in middle
-        // if (squares[ghost.currentIndex].classList.contains("ghost-exit")) { 
-        //     direction = -width
-        // }
+        if (squares[ghost.currentIndex].classList.contains("ghost-exit")) { 
+            direction = -width
+        }
 
         //logic that moves the ghosts to new div
         squares[ghost.currentIndex].classList.remove(ghost.className)
