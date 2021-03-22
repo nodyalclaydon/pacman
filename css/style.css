@@ -1,5 +1,5 @@
 :root {
-    --bkg:  #c9e9f6;
+    --bkg: #303030;
 }
 
 html, body {
@@ -11,7 +11,7 @@ html, body {
 h1, h3 {
     text-align: center;
     font-family: Arial, Helvetica, sans-serif;
-    color: rgba(0, 0, 0, .7);
+    color: rgba(255, 255, 255, .8);
 }
 
 /* GRID STYLING */
@@ -31,13 +31,13 @@ h1, h3 {
 }
 
 .pac-dot {
-    background-color: #737373;
+    background-color: rgba(255, 255, 255, .8);
     border: 6px solid var(--bkg);
     box-sizing: border-box;
 }
 
 .wall {
-    background-color: #474B96;
+    background-color: #2f53bd;
     z-index: 2;
 }
 
@@ -58,10 +58,6 @@ h1, h3 {
     box-sizing: border-box;
     border-radius: 50%;
 }
-
-
-
-/* pac-right:after { new animation } */
 
 /* PACMAN ANIMATIONS */
 .pac-right {
@@ -162,36 +158,28 @@ h1, h3 {
     border: 1px solid var(--bkg);
     box-sizing: border-box;
     z-index: 1;
+    border-top-right-radius: 50%;
+    border-top-left-radius: 50%;
 }
 
 .blinky {
     background-color: red;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
 }
 
 .pinky {
     background-color: pink;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
 }
 
 .inky {
     background-color: aqua;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
 }
 
 .clyde {
     background-color: orange;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
 }
 
 .scared-ghost {
-    background-color: aquamarine;
-    border-top-right-radius: 50%;
-    border-top-left-radius: 50%;
+    background-color: #4169e1;
 }
 
 /* GHOST ANIMATIONS */

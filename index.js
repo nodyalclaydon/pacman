@@ -3,6 +3,7 @@ const grid = document.querySelector(".grid")
 const scoreDisplay = document.getElementById("score")
 let squares = []
 let score = 0
+let pacDotCount = 0
 
 // 28 * 28 = 784
     // 0 = pac-dots
@@ -98,7 +99,7 @@ function control(e) {
 
     function pacMove() { 
         moving = setInterval(function() {
-            if (!squares[pacmanCurrentIndex + pacDirection].classList.contains("empty")) {
+        if (!squares[pacmanCurrentIndex + pacDirection].classList.contains("empty")) {
             pacmanCurrentIndex = pacmanCurrentIndex
         } else {
             squares[pacmanCurrentIndex].classList.remove("pacman", "pac-right", "pac-up", "pac-down", "pac-left")
@@ -139,6 +140,7 @@ document.addEventListener('keydown', control) //add a "press arrow button to beg
 function pacDotEaten() {
     if (squares[pacmanCurrentIndex].classList.contains("pac-dot")) {
         score++
+        pacDotCount++
         scoreDisplay.innerHTML = score
         squares[pacmanCurrentIndex].classList.remove("pac-dot")
     }
@@ -211,9 +213,9 @@ function moveGhost(ghost) {
         } else { direction = availDirs[Math.floor(Math.random() * availDirs.length)] }
 
         //makes ghosts exit ghost-lair if they are in middle
-        if (squares[ghost.currentIndex].classList.contains("ghost-exit")) { 
-            direction = -width
-        }
+        // if (squares[ghost.currentIndex].classList.contains("ghost-exit")) { 
+        //     direction = -width
+        // }
 
         //logic that moves the ghosts to new div
         squares[ghost.currentIndex].classList.remove(ghost.className)
@@ -230,16 +232,20 @@ function moveGhost(ghost) {
         if (direction === -1) { squares[ghost.currentIndex].classList.add(ghost.className, `${ghost.className}-left`, "ghost") }
         if (direction === -width) { squares[ghost.currentIndex].classList.add(ghost.className, `${ghost.className}-up`, "ghost") }
         if (direction === +width) { squares[ghost.currentIndex].classList.add(ghost.className, `${ghost.className}-down`, "ghost") }
-
-        if (ghost.isScared) {
-            squares[ghost.currentIndex].classList.add("scared-ghost")
-        }
-
-        if (ghost.isScared && squares[pacmanCurrentIndex].classList.contains("ghost")) { 
-            squares[ghost.currentIndex].classList.remove(ghost.className, "scared-ghost", "ghost")
+        if (ghost.isScared) { squares[ghost.currentIndex].classList.add("scared-ghost") }
+        //logic that makes scared ghost get eaten *** FIX BUG
+        if (ghost.isScared && squares[ghost.currentIndex].classList.contains("pacman")) { 
+            squares[ghost.currentIndex].classList.remove(ghost.className, 
+                                                        "scared-ghost", 
+                                                        "ghost", 
+                                                        `${ghost.className}-right`, 
+                                                        `${ghost.className}-left`, 
+                                                        `${ghost.className}-up`, 
+                                                        `${ghost.className}-down`)
             ghost.currentIndex = ghost.startIndex
             score += 50
             squares[ghost.currentIndex].classList.add(ghost.className, "ghost")
+            ghost.isScared = false
         }
 
         checkForGameOver()
@@ -256,7 +262,8 @@ function checkForGameOver() {
         !squares[pacmanCurrentIndex].classList.contains("scared-ghost")
         ) {
             ghosts.forEach(ghost => clearInterval(ghost.timerId))
-            document.removeEventListener("keyup", control)
+            squares[pacmanCurrentIndex].classList.remove("pac-man", "pac-right", "pac-up", "pac-down", "pac-left")
+            document.removeEventListener("keydown", control)
             scoreDisplay.innerHTML = score + " GAME OVER"
             clearInterval(moving)
             document.removeEventListener('keydown', control)
@@ -265,9 +272,9 @@ function checkForGameOver() {
 
 // Check for Win
 function checkForWin() { //redo logic to check if there are any pellets remaining instead of score (can reach score w/o getting all pellets)
-    if (score === 274) {
+    if (pacDotCount === 234) {
         ghosts.forEach(ghost => clearInterval(ghost.timerId))
-        document.removeEventListener("keyup", control)
+        document.removeEventListener("keydown", control)
         scoreDisplay.innerHTML = score + " YOU WIN!!!"
         clearInterval(moving)
         document.removeEventListener('keydown', control)
