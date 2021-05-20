@@ -226,7 +226,7 @@ h1, h3 {
 
 /* MEDIA QUERY */
 
-@media (min-width: 1500px) {
+@media (min-width: 1000px) {
     .grid {
         width: 840px;
         height: 840px;
